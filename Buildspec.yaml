@@ -1,0 +1,26 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo Installing source NPM dependencies...
+      - npm install
+      - echo Installing Mocha...
+      - npm install -g mocha
+  pre_build:
+    commands:
+      - echo Running linter
+      - npm run lint
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Compiling the Node.js code
+      - echo Running unit tests
+      - npm test
+      - aws cloudformation package --template-file cfn.yaml --s3-bucket $S3_BUCKET \
+                --s3-prefix $S3_BUILDS_PREFIX --output-template-file $TEMPLATE_FILE_NAME
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - '**/*'
